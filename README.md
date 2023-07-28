@@ -40,7 +40,7 @@ http://project-osrm.org/docs/v5.5.1/api/?language=cURL#route-service
 
 59.82761295, 30.41705607
 
-
+![Скрин таблицы](src/assets/images/screenTask.png)
 
 ### Реализация: 
 Проект инициализирован с помощью шаблона
