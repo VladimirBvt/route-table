@@ -2,6 +2,8 @@ import React from 'react';
 import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
 import './App.css';
+import TableRoutes from "./components/TableRoutes/TableRoutes";
+import Map from "./components/Map/Map";
 
 function App() {
   return (
@@ -51,6 +53,12 @@ function App() {
           </a>
         </span>
       </header>
+
+      <main>
+        <h1>Маршруты</h1>
+        <TableRoutes />
+        <Map />
+      </main>
     </div>
   );
 }
