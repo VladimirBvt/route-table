@@ -3,10 +3,12 @@ import {fetchRouteCarFailed, fetchRouteCarSuccess, selectSelectedRoute} from '..
 import {selectRoute} from '../features/routing/routingSlice'
 import getRouteCar from '../api/api';
 
-function* fetchRouteCarWorker() {
+function* fetchRouteCarWorker(action: any) {
+  console.log(action)
   try {
     // @ts-ignore
-    const selectedRoute = yield select(selectSelectedRoute)
+    // const selectedRoute = yield select(selectSelectedRoute)
+    const selectedRoute = yield action.payload
 
     const polyline: [number, number][] = [
       selectedRoute.point1,

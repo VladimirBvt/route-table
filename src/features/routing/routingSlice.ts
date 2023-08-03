@@ -88,8 +88,12 @@ export const routingSlice = createSlice({
   }
 })
 
-export const {selectRoute, fetchRouteCarSuccess, fetchRouteCarFailed, fetchRouteCar} = routingSlice.actions
-export const routingActions = routingSlice.actions
+export const {
+  selectRoute,
+  fetchRouteCarSuccess,
+  fetchRouteCarFailed,
+  fetchRouteCar,
+} = routingSlice.actions
 
 export const selectSelectedRoute = (state: RootState) => state.routing.selectedRoute
 export const selectRoutes = (state: RootState) => state.routing.routes
