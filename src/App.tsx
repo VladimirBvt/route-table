@@ -6,6 +6,7 @@ import TableRoutes from "./components/TableRoutes/TableRoutes";
 import Map from "./components/Map/Map";
 
 function App() {
+
   return (
     <div className="App">
       <header className="App-header">
@@ -54,7 +55,7 @@ function App() {
         </span>
       </header>
 
-      <main>
+      <main className="main">
         <h1>Маршруты</h1>
         <TableRoutes />
         <Map />

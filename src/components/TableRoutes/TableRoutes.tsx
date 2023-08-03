@@ -3,15 +3,13 @@ import {ColumnsType} from "antd/es/table";
 import {Table} from "antd";
 import {TableRowSelection} from "antd/es/table/interface";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {selectRoute, selectRoutes} from "../../features/routing/routingSlice";
-
-export interface DataType {
-  key: string;
-  routes: string;
-  point1: string[];
-  point2: string[];
-  point3: string[];
-}
+import {
+  DataTableType,
+  routingActions,
+  selectRoute,
+  selectRouteLoading,
+  selectRoutes
+} from "../../features/routing/routingSlice";
 
 const renderFn = (coordinates: string[]) => {
   return (
@@ -25,7 +23,7 @@ const renderFn = (coordinates: string[]) => {
   )
 }
 
-const columns: ColumnsType<DataType> = [
+const columns: ColumnsType<DataTableType> = [
   {
     title: 'Маршруты',
     dataIndex: 'routes',
@@ -51,35 +49,18 @@ const columns: ColumnsType<DataType> = [
   },
 ]
 
-// const data: DataType[] = [
-//   {
-//     key: '1',
-//     routes: 'Маршрут №1',
-//     point1: ['59.84660399', '30.29496392'],
-//     point2: ['59.82934196', '30.42423701'],
-//     point3: ['59.83567701', '30.38064206'],
-//   },
-//   {
-//     key: '2',
-//     routes: 'Маршрут №2',
-//     point1: ['59.82934196', '30.42423701'],
-//     point2: ['59.82761295', '30.41705607'],
-//     point3: ['59.84660399', '30.29496392'],
-//   },
-//   {
-//     key: '3',
-//     routes: 'Маршрут №3',
-//     point1: ['59.83567701', '30.38064206'],
-//     point2: ['59.84660399', '30.29496392'],
-//     point3: ['59.82761295', '30.41705607'],
-//   },
-// ]
-
-
 const TableRoutes = () => {
+
+  // const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
   const dispatch = useAppDispatch()
   const dataRoutes = useAppSelector(selectRoutes)
+  const loading = useAppSelector((selectRouteLoading))
+
+  const handleChange = (value: any, type: any, recordId: number) => {
+    console.log({value, type, recordId})
+    dispatch(routingActions.fetchRouteCar)
+  }
 
   // const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([])
 
@@ -97,16 +78,32 @@ const TableRoutes = () => {
     // setSelectedRowKeys(selectedRowKeys)
   // }
 
-  const rowSelection: TableRowSelection<DataType> = {
+
+  const rowSelection: TableRowSelection<DataTableType> = {
     // selectedRowKeys,
     // onChange: onSelectedRowKeysChange,
-    onSelect: (record: DataType, selected: boolean, selectedRows: DataType[]) => {
-      // console.log({record})
 
+    onSelect: (record, selected, selectedRows) => {
+      console.log(record)
       dispatch(selectRoute(record))
     },
+
+    // onChange: (_, selectedRows) => {
+      // console.log(selectedRows[0])
+      // dispatch(selectRoute(selectedRows[0]))
+    // },
     type: 'radio',
     hideSelectAll: true,
+  }
+
+  const onRowFn = (record: DataTableType, index: number | undefined) => {
+    return {
+      onClick: () => {
+        // console.log('Click Table Row!!!')
+        // dispatch(selectRoute(record))
+        // setSelectedRowKeys([String(index)])
+      }
+    }
   }
 
   return (
@@ -117,9 +114,7 @@ const TableRoutes = () => {
 
              rowSelection={rowSelection}
 
-             onRow={(record: DataType, index) => ({
-               // onClick: () => selectRow(record)
-        })}
+             onRow={onRowFn}
       />
     </div>
   );

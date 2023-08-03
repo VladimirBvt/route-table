@@ -1,11 +1,40 @@
-import {DataType} from "../../components/TableRoutes/TableRoutes";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../../app/store";
 
+export interface DataTableType {
+  key: string;
+  routes: string;
+  point1: string[];
+  point2: string[];
+  point3: string[];
+}
+
+interface Leg {
+  steps: any[];
+  summary: string;
+  weight: number;
+  duration: number;
+  distance: number;
+}
+
+interface RouteCar {
+  distance: number;
+  duration: number;
+  geometry: {
+    coordinates: [number, number][];
+    type: string;
+  };
+  legs: Leg[];
+  weight: number,
+  weight_name: string,
+}
 
 export interface RoutingState {
-  routes: DataType[];
-  selectedRoute: DataType | null;
+  routes: DataTableType[];
+  selectedRoute: DataTableType | null;
+  routeCar: RouteCar[] | null;
+  loading: boolean;
+  loadingError: any;
 }
 
 const initialState: RoutingState = {
@@ -33,21 +62,39 @@ const initialState: RoutingState = {
     },
   ],
   selectedRoute: null,
+  routeCar: null,
+  loading: false,
+  loadingError: null,
 }
 
 export const routingSlice = createSlice({
   name: 'routing',
   initialState,
   reducers: {
-    selectRoute: (state, action: PayloadAction<DataType>) => {
+    selectRoute: (state, action: PayloadAction<DataTableType>) => {
       state.selectedRoute = action.payload
-    }
+    },
+    fetchRouteCar: (state) => {
+      state.loading = true
+      state.loadingError = null
+    },
+    fetchRouteCarSuccess: (state, action: PayloadAction<RouteCar[]>) => {
+      state.routeCar = action.payload
+    },
+    fetchRouteCarFailed: (state, action: PayloadAction<any>) => {
+      state.loading = false
+      state.loadingError = action.payload
+    },
   }
 })
 
-export const {selectRoute} = routingSlice.actions
+export const {selectRoute, fetchRouteCarSuccess, fetchRouteCarFailed, fetchRouteCar} = routingSlice.actions
+export const routingActions = routingSlice.actions
 
 export const selectSelectedRoute = (state: RootState) => state.routing.selectedRoute
 export const selectRoutes = (state: RootState) => state.routing.routes
+export const selectRouteCar = (state: RootState) => state.routing.routeCar
+export const selectRouteLoading = (state: RootState) => state.routing.loading
+export const selectRouteLoadingError = (state: RootState) => state.routing.loadingError
 
 export default routingSlice.reducer

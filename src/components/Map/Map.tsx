@@ -1,15 +1,19 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {MapContainer, Marker, Polyline, Popup, TileLayer, useMap} from 'react-leaflet'
 import styles from './Map.module.scss'
-import {selectSelectedRoute} from "../../features/routing/routingSlice";
+import {selectRouteCar, selectSelectedRoute} from "../../features/routing/routingSlice";
 import {useAppSelector} from "../../app/hooks";
-import {log} from "util";
 
 const Map = () => {
 
-  const selectedRoute = useAppSelector(selectSelectedRoute)
+  const [route, setRoute] = useState<[number, number][]>([])
+  const [points, setPoints] = useState<[number, number][]>([])
 
-  const center: [number, number] = [51.505, -0.09]
+  const selectedRoute = useAppSelector(selectSelectedRoute)
+  const routeCar = useAppSelector(selectRouteCar)
+
+  // const center: [number, number] = [51.505, -0.09]
+  const center: [number, number] = [59.983762, 30.311365]
 
   const polyline: [number, number][] = [
     [51.505, -0.09],
@@ -17,38 +21,37 @@ const Map = () => {
     [51.51, -0.12],
   ]
 
-  // const polyline = [
-  //   ['51.505', '-0.09'],
-  //   ['51.51', '-0.1'],
-  //   ['51.51', '-0.12'],
-  // ]
-
-  const limeOptions = { color: 'lime' }
-
-  console.log(selectedRoute)
+  const limeOptions = {color: 'lime'}
 
   useEffect(() => {
-    // const BASE_URL = 'http://router.project-osrm.org'
-    const points = polyline.map(item => `${item[0]},${item[1]}`).join(';')
+    const pointsCoordinates: [number, number][] = routeCar !== null ? routeCar[0].geometry.coordinates : []
+    setRoute(pointsCoordinates)
 
-    // const response = fetch(`${BASE_URL}/route/v1/driving/${points}?overview=simplified`)
-    fetch(`http://router.project-osrm.org/route/v1/driving/${points}?overview=simplified`)
-      .then(res => console.log(res.json()))
+    const initialPointsSelectedRoute = selectedRoute !== null ?
+      [
+        selectedRoute.point1.map(item => Number(item)),
+        selectedRoute.point2.map(item => Number(item)),
+        selectedRoute.point3.map(item => Number(item))
+      ] : []
+    // @ts-ignore
+    setPoints(initialPointsSelectedRoute)
+  }, [selectedRoute])
 
-    // console.log(response)
-      }, [])
+  useEffect(() => {
+    console.log(route)
+    }, [route])
 
   return (
     <div>
       <h2>Карта</h2>
-
-      <MapContainer center={center} zoom={13} scrollWheelZoom={false} className={styles.mapContainer}>
-      {/*<MapContainer center={[55.7422, 37.5719]} zoom={11} scrollWheelZoom={false} className={styles.mapContainer}>*/}
+      {/*// @ts-ignore*/}
+      <MapContainer center={center} zoom={9} scrollWheelZoom={false} className={styles.mapContainer} attributionControl={false}>
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        {polyline.map((coordinateItem, index) => {
-          return (
+        {/*{polyline.map((coordinateItem, index) => {*/}
+        {points && points.map((coordinateItem, index) => {
+            return (
             <Marker position={coordinateItem} key={index}>
               <Popup>
                 <b>{`Point ${index + 1}: `}</b>
@@ -57,13 +60,7 @@ const Map = () => {
             </Marker>
           )
         })}
-        {/*<Marker position={[51.505, -0.09]}>*/}
-        {/*  <Popup>*/}
-        {/*    A pretty CSS3 popup. <br /> Easily customizable.*/}
-        {/*  </Popup>*/}
-        {/*</Marker>*/}
-
-        <Polyline pathOptions={limeOptions} positions={polyline} />
+        <Polyline pathOptions={limeOptions} positions={route}/>
       </MapContainer>
 
     </div>
